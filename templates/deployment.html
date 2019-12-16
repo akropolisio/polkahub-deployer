@@ -1,0 +1,39 @@
+{
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": {
+        "name": "{{ name }}",
+        "namespace": "{{ namespace }}"
+    },
+    "spec": {
+        "replicas": 1,
+        "selector": {
+            "matchLabels": {
+                "app": "{{ name }}"
+            }
+        },
+        "template": {
+            "metadata": {
+                "labels": {
+                    "app": "{{ name }}",
+                    "type": "chain"
+                },
+                "name": "{{ name }}"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "image": "{{ registry }}/{{ name }}:{{ tag }}",
+                        "name": "main",
+                        "ports": [
+                            {
+                                "containerPort": 9944,
+                                "protocol": "TCP"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

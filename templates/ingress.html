@@ -1,0 +1,29 @@
+{
+    "apiVersion": "networking.k8s.io/v1beta1",
+    "kind": "Ingress",
+    "metadata": {
+        "annotations": {
+            "nginx.ingress.kubernetes.io/rewrite-target": "/"
+        },
+        "name": "{{ name }}",
+        "namespace": "{{ namespace }}"
+    },
+    "spec": {
+        "rules": [
+            {
+                "host": "{{ name }}.chain.{{ namespace }}.org",
+                "http": {
+                    "paths": [
+                        {
+                            "backend": {
+                                "serviceName": "{{ name }}",
+                                "servicePort": 80
+                            },
+                            "path": "/"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
