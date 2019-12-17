@@ -27,7 +27,7 @@ struct DeployProjectRequest {
 
 #[derive(Template)]
 #[template(path = "deployment.html")]
-struct Deploymenyt<'a> {
+struct Deployment<'a> {
     name: &'a str,
     namespace: &'a str,
     tag: &'a str,
@@ -151,7 +151,7 @@ async fn handle_deploy_project(
         ),
         &deploy_project.name,
         &deploy_project.build_id,
-        Deploymenyt {
+        Deployment {
             name: &deploy_project.name,
             namespace: &data.namespace,
             tag: &deploy_project.tag,
