@@ -59,15 +59,15 @@ async fn deploy_project(
 async fn main() -> std::io::Result<()> {
     env_logger::init();
 
-    let (ip, port, workers, api_url, configs_path, secrets_path) = read_env();
+    let (ip, port, workers, api_url, config_path, secret_path) = read_env();
 
-    let registry_url = read_file(&configs_path, "registry")
+    let registry_url = read_file(&config_path, "registry")
         .await?
         .trim()
         .to_string();
-    let crt = read_file(&secrets_path, "ca.crt").await?;
-    let token = read_file(&secrets_path, "token").await?.trim().to_string();
-    let namespace = read_file(&secrets_path, "namespace")
+    let crt = read_file(&secret_path, "ca.crt").await?;
+    let token = read_file(&secret_path, "token").await?.trim().to_string();
+    let namespace = read_file(&secret_path, "namespace")
         .await?
         .trim()
         .to_string();
@@ -106,8 +106,8 @@ fn read_env() -> (String, u64, usize, String, String, String) {
             .parse()
             .expect("can not parse server workers"),
         env::var("API_URL").unwrap_or_else(|_| "https://kubernetes".to_string()),
-        env::var("CONFIGS_PATH").unwrap_or_else(|_| "/configs".to_string()),
-        env::var("SECRETS_PATH")
+        env::var("CONFIG_PATH").unwrap_or_else(|_| "/config".to_string()),
+        env::var("SECRET_PATH")
             .unwrap_or_else(|_| "/var/run/secrets/kubernetes.io/serviceaccount".to_string()),
     )
 }
@@ -145,10 +145,7 @@ async fn handle_deploy_project(
 ) -> std::io::Result<String> {
     update_entity(
         &data.client,
-        &format!(
-            "{}/apis/apps/v1/namespaces/{}/deployments",
-            data.api_url, data.namespace
-        ),
+        &deployment_url(&data.api_url, &data.namespace),
         &deploy_project.name,
         &deploy_project.build_id,
         Deploymenyt {
@@ -164,10 +161,7 @@ async fn handle_deploy_project(
 
     update_entity(
         &data.client,
-        &format!(
-            "{}/apis/networking.k8s.io/v1beta1/namespaces/{}/ingresses",
-            data.api_url, data.namespace
-        ),
+        &ingress_url(&data.api_url, &data.namespace),
         &deploy_project.name,
         &deploy_project.build_id,
         Ingress {
@@ -181,10 +175,7 @@ async fn handle_deploy_project(
 
     update_entity(
         &data.client,
-        &format!(
-            "{}/api/v1/namespaces/{}/services",
-            data.api_url, data.namespace
-        ),
+        &serivce_url(&data.api_url, &data.namespace),
         &deploy_project.name,
         &deploy_project.build_id,
         Serice {
@@ -237,4 +228,16 @@ async fn update_entity(
     );
 
     Ok(())
+}
+
+fn deployment_url(api_url: &str, namespace: &str) -> String {
+    format!("{}/apis/apps/v1/namespaces/{}/deployments", api_url, namespace)
+}
+
+fn ingress_url(api_url: &str, namespace: &str) -> String {
+    format!("{}/apis/networking.k8s.io/v1beta1/namespaces/{}/ingresses", api_url, namespace)
+}
+
+fn serivce_url(api_url: &str, namespace: &str) -> String {
+    format!( "{}/api/v1/namespaces/{}/services", api_url, namespace)
 }

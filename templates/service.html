@@ -8,8 +8,14 @@
     "spec": {
         "ports": [
             {
+                "name": "ws",
                 "port": 80,
                 "targetPort": 9944
+            },
+            {
+                "name": "http",
+                "port": 81,
+                "targetPort": 9933
             }
         ],
         "selector": {

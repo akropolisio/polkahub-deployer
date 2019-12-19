@@ -11,13 +11,27 @@
     "spec": {
         "rules": [
             {
-                "host": "{{ name }}.chain.{{ namespace }}.org",
+                "host": "{{ name }}.polkahub.tech",
                 "http": {
                     "paths": [
                         {
                             "backend": {
                                 "serviceName": "{{ name }}",
                                 "servicePort": 80
+                            },
+                            "path": "/"
+                        }
+                    ]
+                }
+            },
+            {
+                "host": "{{ name }}-rpc.polkahub.tech",
+                "http": {
+                    "paths": [
+                        {
+                            "backend": {
+                                "serviceName": "{{ name }}",
+                                "servicePort": 81
                             },
                             "path": "/"
                         }
