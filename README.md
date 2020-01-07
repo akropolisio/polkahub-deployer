@@ -27,3 +27,18 @@ cargo build
 ```bash
 cargo run
 ```
+
+# Environment variables description
+SERVER_IP - IP address for binding, e.g. 127.0.0.1
+SERVER_PORT - port for binding, e.g. 8080
+API_URL - Kubernetes API URL, e.g. https://kubernetes
+CONFIG_PATH - path to directory with configs, e.g. "/config"
+SECRET_PATH - path to directory with secrets, e.g. "/var/run/secrets/kubernetes.io/serviceaccount"
+
+# Config files
+$CONFIG_PATH/registry - Docker registry URL, e.g. registry.polkahub.org 
+
+# Secret files
+$SECRET_PATH/ca.crt - Kubernetes API certificate
+$SECRET_PATH/namespace - namespace where will deploy projects
+$SECRET_PATH/token - Kubernetes API token
