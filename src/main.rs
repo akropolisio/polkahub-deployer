@@ -16,6 +16,10 @@ struct State {
     api_url: String,
     client: Client,
     namespace: String,
+    cpu_limit: String,
+    memory_limit: String,
+    cpu_request: String,
+    memory_request: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -32,6 +36,10 @@ struct Deployment<'a> {
     namespace: &'a str,
     tag: &'a str,
     registry: &'a str,
+    cpu_limit: &'a str,
+    memory_limit: &'a str,
+    cpu_request: &'a str,
+    memory_request: &'a str,
 }
 
 #[derive(Template)]
@@ -65,6 +73,22 @@ async fn main() -> std::io::Result<()> {
         .await?
         .trim()
         .to_string();
+    let cpu_limit = read_file(&config_path, "cpu_limit")
+        .await?
+        .trim()
+        .to_string();
+    let memory_limit = read_file(&config_path, "memory_limit")
+        .await?
+        .trim()
+        .to_string();
+    let cpu_request = read_file(&config_path, "cpu_request")
+        .await?
+        .trim()
+        .to_string();
+    let memory_request = read_file(&config_path, "memory_request")
+        .await?
+        .trim()
+        .to_string();
     let crt = read_file(&secret_path, "ca.crt").await?;
     let token = read_file(&secret_path, "token").await?.trim().to_string();
     let namespace = read_file(&secret_path, "namespace")
@@ -79,6 +103,10 @@ async fn main() -> std::io::Result<()> {
         api_url,
         client,
         namespace,
+        cpu_limit,
+        memory_limit,
+        cpu_request,
+        memory_request,
     });
 
     HttpServer::new(move || {
@@ -153,6 +181,10 @@ async fn handle_deploy_project(
             namespace: &data.namespace,
             tag: &deploy_project.tag,
             registry: &data.registry_url,
+            cpu_limit: &data.cpu_limit,
+            memory_limit: &data.memory_limit,
+            cpu_request: &data.cpu_request,
+            memory_request: &data.memory_request,
         }
         .render()
         .expect("can not render deployment"),
@@ -231,13 +263,19 @@ async fn update_entity(
 }
 
 fn deployment_url(api_url: &str, namespace: &str) -> String {
-    format!("{}/apis/apps/v1/namespaces/{}/deployments", api_url, namespace)
+    format!(
+        "{}/apis/apps/v1/namespaces/{}/deployments",
+        api_url, namespace
+    )
 }
 
 fn ingress_url(api_url: &str, namespace: &str) -> String {
-    format!("{}/apis/networking.k8s.io/v1beta1/namespaces/{}/ingresses", api_url, namespace)
+    format!(
+        "{}/apis/networking.k8s.io/v1beta1/namespaces/{}/ingresses",
+        api_url, namespace
+    )
 }
 
 fn serivce_url(api_url: &str, namespace: &str) -> String {
-    format!( "{}/api/v1/namespaces/{}/services", api_url, namespace)
+    format!("{}/api/v1/namespaces/{}/services", api_url, namespace)
 }
