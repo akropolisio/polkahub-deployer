@@ -118,7 +118,7 @@ async fn main() -> std::io::Result<()> {
     })
     .bind(format!("{}:{}", ip, port))?
     .workers(workers)
-    .start()
+    .run()
     .await
 }
 
@@ -153,7 +153,6 @@ fn build_client(crt: &str, token: &str) -> Result<Client, reqwest::Error> {
     );
 
     Client::builder()
-        .use_default_tls()
         .default_headers(headers)
         .add_root_certificate(crt)
         .build()
