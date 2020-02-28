@@ -34,7 +34,17 @@
                                 "containerPort": 9933,
                                 "protocol": "TCP"
                             }
-                        ]
+                        ],
+                        "resources": {
+                            "limits": {
+                                "cpu": "{{ cpu_limit }}",
+                                "memory": "{{ memory_limit }}"
+                            },
+                            "requests": {
+                                "cpu": "{{ cpu_request }}",
+                                "memory": "{{ memory_request }}"
+                            }
+                        }
                     }
                 ]
             }
